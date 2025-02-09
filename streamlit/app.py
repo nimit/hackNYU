@@ -3,6 +3,7 @@ from pages.landing_page import show_landing_page
 from pages.login import show_login_page
 from pages.signup import show_signup_page
 from pages.add_obstacle import show_add_obstacle_page
+from pages.view_obstacles import show_view_obstacles_page
 from pymongo import MongoClient
 import jwt
 import datetime
@@ -255,6 +256,10 @@ def main():
         if st.button("🛑 Add Obstacle", key="add_obstacle"):
             st.session_state.active_page = 'add_obstacle'
 
+        # View Obstacles button
+        if st.button("View Obstacles", key="view_obstacles"):
+            st.session_state.active_page = 'view_obstacles'
+
     # Call the function to display the active page
     active_page = st.session_state.get('active_page', 'landing_page')
     if active_page == 'landing_page':
@@ -269,6 +274,9 @@ def main():
     elif active_page == 'add_obstacle':
         print("Add Obstacle Page Active")
         show_add_obstacle_page(obstacles_collection)
+    elif active_page == 'view_obstacles':
+        print("View Obstacles Page Active")
+        show_view_obstacles_page(obstacles_collection)
     else:
         st.session_state.active_page = 'landing_page'  # Default to landing page if not set
 
