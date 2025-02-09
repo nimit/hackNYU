@@ -7,9 +7,9 @@ from pages.add_obstacle import show_add_obstacle_page
 # Set page configuration as the first command
 st.set_page_config(
     page_title="Spotifind",
-    page_icon="🎵",
+    page_icon="👁️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 # Hide default menu and sidebar nav
@@ -20,8 +20,6 @@ st.markdown("""
     header {visibility: hidden;}
     [data-testid="collapsedControl"] {display: none;}
     section[data-testid="stSidebar"] > div {padding-top: 0rem;}
-    .css-1d391kg {display: none;}  /* Hide default sidebar nav */
-    .css-1q1n0ol {display: none;}  /* Hide additional sidebar elements */
 </style>
 """, unsafe_allow_html=True)
 
@@ -70,7 +68,7 @@ def add_custom_css():
             background-color: #1ED760;
             border: none;
             border-radius: 500px;
-            color: #000000;
+            color: #FFFFFF;
             padding: 0.875rem 2rem;
             font-weight: 700;
             text-transform: uppercase;
@@ -83,11 +81,17 @@ def add_custom_css():
             background-color: #1FDF64;
             transform: scale(1.04);
         }
+
+        /* Hide sidebar completely */
+        [data-testid="stSidebarNavItems"] {
+            display: none;  /* Hide sidebar navigation items */
+        }
         
         /* Sidebar styling */
         [data-testid="stSidebar"] {
             background-color: #000000;
             padding: 2rem 1rem;
+            display: hidden;
         }
         
         /* Sidebar navigation styling */
@@ -98,7 +102,7 @@ def add_custom_css():
         
         .sidebar-nav .stButton > button {
             background-color: transparent;
-            color: #B3B3B3;
+            color: #000000;
             text-align: left;
             text-transform: none;
             letter-spacing: normal;
@@ -115,7 +119,7 @@ def add_custom_css():
         
         /* Content container styling */
         .content-container {
-            background: #181818;
+            background: #000000;
             border-radius: 8px;
             padding: 1.5rem;
             margin: 1rem 0;
@@ -186,6 +190,20 @@ def add_custom_css():
         a:hover {
             color: #1FDF64;
         }
+        
+        /* Change button font color to black */
+        .stButton > button {
+            color: black !important;  /* Set button text color to black */
+        }
+        
+        /* Change sidebar button font color to black */
+        .sidebar .stButton > button {
+            color: black !important;  /* Set sidebar button text color to black */
+        }
+        /* Change the hover color for buttons to ensure visibility */
+        .stButton > button:hover {
+            color: black !important;  /* Ensure hover color is also black */
+        }
         </style>
         """,
         unsafe_allow_html=True
@@ -196,16 +214,13 @@ add_custom_css()
 def main():
     # Initialize session state for active page
     if 'active_page' not in st.session_state:
-        st.session_state.active_page = 'landing_page'  # Ensure it starts on the landing page
+        st.session_state.active_page = 'landing_page'  # Default to landing page
 
-    # Debugging output to check the active page
-    st.write(f"Current active page: {st.session_state.active_page}")
 
     # Sidebar navigation
     with st.sidebar:
         st.title("Spotifind")
-        st.markdown('<div class="sidebar-nav">', unsafe_allow_html=True)
-
+        
         # Home button
         if st.button("🏠 Home", key="home"):
             st.session_state.active_page = 'landing_page'
@@ -221,18 +236,23 @@ def main():
         # Add Obstacle button
         if st.button("🛑 Add Obstacle", key="add_obstacle"):
             st.session_state.active_page = 'add_obstacle'
-        
-        st.markdown('</div>', unsafe_allow_html=True)
 
-    # Page navigation logic
-    if st.session_state.active_page == 'landing_page':
+    # Call the function to display the active page
+    active_page = st.session_state.get('active_page', 'landing_page')
+    if active_page == 'landing_page':
+        print("Landing Page Active")
         show_landing_page()
-    elif st.session_state.active_page == 'login':
+    elif active_page == 'login':
+        print("Login Page Active")
         show_login_page()
-    elif st.session_state.active_page == 'signup':
+    elif active_page == 'signup':
+        print("Sign Up Page Active")
         show_signup_page()
-    elif st.session_state.active_page == 'add_obstacle':
+    elif active_page == 'add_obstacle':
+        print("Add Obstacle Page Active")
         show_add_obstacle_page()
+    else:
+        st.session_state.active_page = 'landing_page'  # Default to landing page if not set
 
 if __name__ == "__main__":
     main()

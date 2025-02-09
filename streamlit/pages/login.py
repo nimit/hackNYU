@@ -1,7 +1,12 @@
 import streamlit as st
 import requests
+import time
 
 def show_login_page():
+    # Check if the function is called directly
+    if 'active_page' not in st.session_state or st.session_state.active_page != 'login':
+        st.session_state.active_page = 'login'  # Set active page to login
+
     # Center the login form
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -65,7 +70,8 @@ def show_login_page():
                 token = response.json().get("token")
                 st.session_state["token"] = token
                 st.success("Logged in successfully!")
-                # Redirect to another page or perform actions
+                time.sleep(2)  # Wait for 2 seconds
+                st.experimental_rerun()  # Redirect to the landing page
             else:
                 st.error("Error: " + response.text)  # Show the raw response text
         
@@ -73,7 +79,7 @@ def show_login_page():
         st.markdown("""
             <div style="text-align: center; margin-top: 2rem;">
                 <p style="color: #A7A7A7;">Don't have an account? 
-                    <a href="?page=signup" style="color: #1ED760; text-decoration: none; font-weight: 500;">
+                    <a href="signup" target="_blank" style="color: #1ED760; text-decoration: none; font-weight: 500;">
                         Sign up for Spotifind
                     </a>
                 </p>

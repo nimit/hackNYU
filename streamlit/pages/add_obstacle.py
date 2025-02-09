@@ -130,5 +130,7 @@ def show_add_obstacle_page():
     </script>
     """, height=0)
 
-# Run the app
-show_add_obstacle_page()
+#if active page is add_obstacle, show the add_obstacle_page
+if st.session_state.get('active_page', '') == 'add_obstacle':
+    print("Add Obstacle Page Active")
+    show_add_obstacle_page()
