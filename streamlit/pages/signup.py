@@ -1,8 +1,10 @@
 import streamlit as st
 import requests
 import time
+import jwt
+import bcrypt
 
-def show_signup_page():
+def show_signup_page(users_collection):
 
     # Center the signup form
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -23,7 +25,7 @@ def show_signup_page():
                     font-size: 2rem !important;
                     font-weight: 700;
                     margin-bottom: 2rem;
-                ">Sign up for Spotifind</h1>
+                ">Sign up for SpotiFind</h1>
             </div>
         """, unsafe_allow_html=True)
         
@@ -31,58 +33,27 @@ def show_signup_page():
         email = st.text_input("Email address", key="signup_email", placeholder="Enter your email.")
         password = st.text_input("Password", type="password", key="signup_password", placeholder="Create a password.")
         username = st.text_input("Username", key="username", placeholder="Enter a profile name.")
-        
-        # Solana Wallet Address
-        solana_wallet = st.text_input("Solana Wallet Address", key="solana_wallet", placeholder="Connect your Phantom wallet.", disabled=True)
-        
-        # Button to connect Phantom wallet
-        if st.button("Connect Phantom Wallet", key="connect_wallet"):
-            st.components.v1.html(
-                """
-                <script>
-                    async function connectAndSendKey() {
-                        if (window.solana && window.solana.isPhantom) {
-                            try {
-                                const response = await window.solana.connect();
-                                const publicKey = response.publicKey.toString();
-                                // Notify the parent window with the public key via query parameter update.
-                                const currentUrl = new URL(window.location.href);
-                                currentUrl.searchParams.set("wallet", publicKey);
-                                window.location.href = currentUrl.toString();
-                            } catch (err) {
-                                console.error(err);
-                                alert("Connection failed. Please try again.");
-                            }
-                        } else {
-                            alert("Phantom wallet not found. Please install it from https://phantom.app.");
-                        }
-                    }
-                    connectAndSendKey();
-                </script>
-                """,
-                height=0
-            )
-
-
-        # Display the connected wallet address
-        if st.session_state.get("solana_wallet"):
-            st.success(f"Connected Wallet: {st.session_state.solana_wallet}")
-
+        wallet_address = st.text_input("Solana Wallet Address")  # New field for wallet address
+    
         # Sign Up Button
         if st.button("SIGN UP", type="primary", key="signup_button"):
-            response = requests.post("http://localhost:5000/signup", json={
+            if users_collection.find_one({"email": email}):
+                st.error("Email address already exists!")
+                return
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+            new_user = {
                 "username": username,
                 "email": email,
-                "password": password,
-                "solana_wallet": st.session_state.get("solana_wallet")  # Include the Solana wallet address
-            })
+                "password": hashed_password,
+                "wallet_address": wallet_address
+            }
+            users_collection.insert_one(new_user)
             
-            if response.status_code == 201:
-                st.success("Signup successful! Redirecting...")
-                time.sleep(2)  # Wait for 2 seconds
-                st.experimental_rerun()  # Redirect to the landing page
-            else:
-                st.error("Error: " + response.json().get("message", "Unknown error"))
+            st.success("User created successfully!")
+            # Redirect to landing page after 2 seconds
+            time.sleep(2)
+            st.session_state.active_page = 'landing_page'
         
         # Sign In Link
         st.markdown("""

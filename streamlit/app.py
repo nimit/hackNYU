@@ -3,10 +3,26 @@ from pages.landing_page import show_landing_page
 from pages.login import show_login_page
 from pages.signup import show_signup_page
 from pages.add_obstacle import show_add_obstacle_page
+from pymongo import MongoClient
+import jwt
+import datetime
+import bcrypt
+import os
+import base64
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()  # Get secret key from .env
+
+# MongoDB Atlas connection
+client = MongoClient(os.getenv('MONGO_URI'))  # Get MongoDB URI from .env
+db = client['your_database_name']  # Replace with your database name
+users_collection = db['users']
+obstacles_collection = db['obstacles']
 
 # Set page configuration as the first command
 st.set_page_config(
-    page_title="Spotifind",
+    page_title="SpotiFind",
     page_icon="👁️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -215,11 +231,13 @@ def main():
     # Initialize session state for active page
     if 'active_page' not in st.session_state:
         st.session_state.active_page = 'landing_page'  # Default to landing page
+    if 'user' not in st.session_state:
+        st.session_state.user = None  # No user logged in
 
 
     # Sidebar navigation
     with st.sidebar:
-        st.title("Spotifind")
+        st.title("SpotiFind")
         
         # Home button
         if st.button("🏠 Home", key="home"):
@@ -244,13 +262,13 @@ def main():
         show_landing_page()
     elif active_page == 'login':
         print("Login Page Active")
-        show_login_page()
+        show_login_page(users_collection)
     elif active_page == 'signup':
         print("Sign Up Page Active")
-        show_signup_page()
+        show_signup_page(users_collection)
     elif active_page == 'add_obstacle':
         print("Add Obstacle Page Active")
-        show_add_obstacle_page()
+        show_add_obstacle_page(obstacles_collection)
     else:
         st.session_state.active_page = 'landing_page'  # Default to landing page if not set
 

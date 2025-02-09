@@ -1,16 +1,17 @@
 import streamlit as st
+from PIL import Image
 
 def show_landing_page():
     # Main hero section
-    st.title("Welcome to Spotifind")
+    st.title("Welcome to SpotiFind")
     
     # Project description
     st.markdown("""
     <div style="background-color: #121212; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-        <h2 style="color: #FFFFFF;">About Spotifind</h2>
+        <h2 style="color: #FFFFFF;">About SpotiFind</h2>
         <p style="color: #A7A7A7;">
-            Spotifind is an innovative project designed to assist visually impaired individuals in finding objects and navigating their environment safely. 
-            By leveraging advanced computer vision (CV) and artificial intelligence (AI) technologies, Spotifind helps users locate items and guides them to their destinations while avoiding obstacles.
+            SpotiFind is an innovative project designed to assist visually impaired individuals in finding objects and navigating their environment safely. 
+            By leveraging advanced computer vision (CV) and artificial intelligence (AI) technologies, SpotiFind helps users locate items and guides them to their destinations while avoiding obstacles.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -44,11 +45,64 @@ def show_landing_page():
     </div>
     """, unsafe_allow_html=True)
 
+    # Incentives for Adding Obstacles
+    st.subheader("Incentives for Adding Obstacles")
+    st.write("""
+        When you add an obstacle, you can earn NFTs on the Solana blockchain! 
+        These NFTs serve as a reward for your contributions and can be traded or held as collectibles.
+    """)
+
+    # Display Mindmap and Flowchart
+    st.subheader("How It Works")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.image("resources/mindmap.png", caption="Mindmap of the Process", use_column_width=True)
+
+    with col2:
+        st.image("resources/flowchart.png", caption="User Journey Flowchart", use_column_width=True)
+
+    # Cards for New Additions
+    st.subheader("New Additions")
+    st.markdown("""
+        <div style="display: flex; justify-content: space-around;">
+            <div style="border: 1px solid #1ED760; border-radius: 8px; padding: 10px; width: 200px;">
+                <h4 style="color: #1ED760;">NFT Rewards</h4>
+                <p>Earn NFTs for every obstacle you add!</p>
+            </div>
+            <div style="border: 1px solid #1ED760; border-radius: 8px; padding: 10px; width: 200px;">
+                <h4 style="color: #1ED760;">User Journey</h4>
+                <p>Follow the flowchart to understand the process.</p>
+            </div>
+            <div style="border: 1px solid #1ED760; border-radius: 8px; padding: 10px; width: 200px;">
+                <h4 style="color: #1ED760;">Mindmap</h4>
+                <p>Visualize the entire process of adding obstacles.</p>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Additional Engaging Content
+    st.subheader("Join Our Community")
+    st.write("""
+        Become a part of our growing community of users who are making the world more accessible for visually impaired individuals. 
+        Share your experiences, provide feedback, and help us improve SpotiFind!
+    """)
+
+    st.markdown("""
+        <div style="background-color: #181818; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+            <h2 style="color: #FFFFFF;">Get Involved</h2>
+            <p style="color: #A7A7A7;">
+                We are always looking for volunteers and contributors to help us enhance SpotiFind. 
+                If you're interested in contributing, please reach out to us!
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
     # Demo section
     st.markdown("""
     <div style="background-color: #121212; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
         <h2 style="color: #FFFFFF;">Demo Videos</h2>
-        <p style="color: #A7A7A7;">Watch the following demo videos to see Spotifind in action:</p>
+        <p style="color: #A7A7A7;">Watch the following demo videos to see SpotiFind in action:</p>
         <div style="display: flex; justify-content: space-around; flex-wrap: wrap;">
             <div style="margin: 1rem; width: 300px; background-color: #282828; border-radius: 8px; padding: 1rem;">
                 <h3 style="color: #1ED760;">Demo Video 1</h3>
@@ -68,28 +122,10 @@ def show_landing_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # Infographics section
-    st.markdown("""
-    <div style="background-color: #181818; border-radius: 8px; padding: 1rem; margin: 1rem 0;">
-        <h2 style="color: #FFFFFF;">Infographics</h2>
-        <p style="color: #A7A7A7;">Here are some infographics that illustrate how Spotifind works:</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-            <div style="margin: 1rem; background-color: #282828; border-radius: 8px; padding: 1rem;">
-                <h3 style="color: #1ED760;">How Spotifind Works</h3>
-                <img src="path_to_infographic_1.png" alt="How Spotifind Works" style="width: 100%; border-radius: 8px;">
-            </div>
-            <div style="margin: 1rem; background-color: #282828; border-radius: 8px; padding: 1rem;">
-                <h3 style="color: #1ED760;">User Journey</h3>
-                <img src="path_to_infographic_2.png" alt="User Journey" style="width: 100%; border-radius: 8px;">
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     # Call to action
     st.markdown("""
     <div style="text-align: center; margin: 2rem 0;">
-        <h2 style="color: #FFFFFF;">Get Started with Spotifind</h2>
+        <h2 style="color: #FFFFFF;">Get Started with SpotiFind</h2>
         <p style="color: #A7A7A7;">Join us in making the world more accessible for visually impaired individuals.</p>
         <a href="?page=signup" style="
             background-color: #1ED760; 

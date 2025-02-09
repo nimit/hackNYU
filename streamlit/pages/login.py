@@ -1,8 +1,11 @@
 import streamlit as st
 import requests
 import time
+import jwt
+import datetime
+import bcrypt
 
-def show_login_page():
+def show_login_page(users_collection):
     # Check if the function is called directly
     if 'active_page' not in st.session_state or st.session_state.active_page != 'login':
         st.session_state.active_page = 'login'  # Set active page to login
@@ -26,7 +29,7 @@ def show_login_page():
                     font-size: 2rem !important;
                     font-weight: 700;
                     margin-bottom: 2rem;
-                ">Log in to Spotifind</h1>
+                ">Log in to SpotiFind</h1>
             </div>
         """, unsafe_allow_html=True)
         
@@ -62,25 +65,31 @@ def show_login_page():
         # Login Button
         st.markdown("<div style='margin: 2rem 0;'>", unsafe_allow_html=True)
         if st.button("LOG IN", type="primary", key="login_button"):
-            response = requests.post("http://localhost:5000/login", json={"email": email, "password": password})
-            print("Response Status Code:", response.status_code)  # Debugging line
-            print("Response Content:", response.content)  # Debugging line
-            
-            if response.status_code == 200:
-                token = response.json().get("token")
-                st.session_state["token"] = token
-                st.success("Logged in successfully!")
-                time.sleep(2)  # Wait for 2 seconds
-                st.experimental_rerun()  # Redirect to the landing page
-            else:
-                st.error("Error: " + response.text)  # Show the raw response text
+            user = users_collection.find_one({"email": email})
+            if not user:
+                st.error("User not found!")
+
+            # Check password
+            if not bcrypt.checkpw(password.encode('utf-8'), user['password']):
+                st.error("Invalid password!")
+
+            # Create JWT token
+            token = jwt.encode({
+                'user_id': str(user['_id']),
+                'exp': datetime.utcnow() + datetime.timedelta(hours=1)
+            }, algorithm='HS256')
+
+            st.session_state["token"] = token
+            st.success("Logged in successfully!")
+            time.sleep(2)  # Wait for 2 seconds before redirecting to the landing page
+            st.session_state.active_page = 'landing_page'
         
         # Sign Up Link
         st.markdown("""
             <div style="text-align: center; margin-top: 2rem;">
                 <p style="color: #A7A7A7;">Don't have an account? 
                     <a href="signup" target="_blank" style="color: #1ED760; text-decoration: none; font-weight: 500;">
-                        Sign up for Spotifind
+                        Sign up for SpotiFind
                     </a>
                 </p>
             </div>
