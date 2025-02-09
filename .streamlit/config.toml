@@ -1,0 +1,11 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+runOnSave = true
+
+[theme]
+base = "dark"
+
+[ui]
+hideSidebarNav = true 
