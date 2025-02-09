@@ -1,9 +1,5 @@
 streamlit
 streamlit-extras
 streamlit-chat
-Flask
-pymango
-PyJWT
-flask-cors
 streamlit-folium
 geopy
