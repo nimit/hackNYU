@@ -2,7 +2,7 @@ STRINGS = {
     # First 2 will always be in English
     #*
     "introduction": ". Hey! How can I help you?",
-    "wait_while_load": "Please wait while we setup Spotifind for you. Thank you for your patience.",
+    "wait_while_load": "Please wait while we setup SpotiFind for you. Thank you for your patience.",
     #*
     "transcript_error": "Sorry, could not figure out what you wanted to find.",
     "transcript_success": "Perfect! Let's go find your '{{object}}'.",
