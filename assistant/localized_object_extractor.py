@@ -4,7 +4,22 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from load_dotenv import load_dotenv
 
-def object_extractor(input_text, language, instructions):
+class LocalizedData:
+  object: str
+  translated_classes: list[str]
+  instructions: list[str]
+
+  def __init__(self, object, translated_classes, instructions):
+    self.object = object
+    self.locale_object = translated_classes[object] if object in translated_classes else object
+    self.translated_classes = translated_classes
+    self.instructions = instructions
+  
+  def get(self, key):
+
+    return self.instructions.get(key, "Localization Error").replace("{{object}}", self.locale_object)
+
+def extract_object(input_text, language, instructions):
   load_dotenv()
   sys.stdout.reconfigure(encoding='utf-8')
 
@@ -43,19 +58,23 @@ def object_extractor(input_text, language, instructions):
   json_string = response.content
   json_string = json_string[8:] if json_string.startswith("```json") else json_string 
   json_string = json_string[:-3] if json_string.endswith("```") else json_string
-  data = json.loads(json_string.trim())
+  data = json.loads(json_string.strip())
   object = data['identified_object']
-  translated_classes = data['translated_objects']
+  translated_classes = data['translated_objects'] if data['translated_objects'] else {}
   instructions = data['instructions']
 
-  return object, translated_classes, instructions
+  return LocalizedData(object if object != "none" else None, translated_classes, instructions)
 
 if __name__ == "__main__":
   #? Test this GenAI pipeline
   input_text = "मैं अपनी बोतल ढूंढना चाहता हूँ"
   language = "hi" #* hindi language tag
-  instructions = ["turn left", "turn right", "There is a {{object}} in front of you, turn left"]
-  object, translated_classes, instructions = object_extractor(input_text, language, instructions)
-  print(object)
-  print(len(translated_classes))
-  print(instructions)
+  instructions = {
+    "move_left": "Turn left.",
+    "move_right": "Turn right.",
+    "move_obstructed": "There is a {{object}} in front of you, turn left",
+  }
+  loc_data = extract_object(input_text, language, instructions)
+  print(loc_data.object)
+  print(len(loc_data.translated_classes))
+  print(loc_data.instructions)

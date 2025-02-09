@@ -17,8 +17,8 @@ seg_processor = CLIPSegProcessor.from_pretrained("CIDAS/clipseg-rd64-refined")
 seg_model = CLIPSegForImageSegmentation.from_pretrained("CIDAS/clipseg-rd64-refined").to(device)
 yolo_model = YOLO('yolo11n.pt')
 
-def speak(text, lang):
-    print("Will speak", text)
+def speak(text, lang="en"):
+    print("Will speak:", text)
     tts = gTTS(text=text, lang=lang)
     path = 'say.mp3'
     if os.path.exists(path):
@@ -39,28 +39,54 @@ def speak(text, lang):
     # speaker = wincom.Dispatch("SAPI.SpVoice")
     # speaker.Speak(sanitized_text)
 
+def run_semantic_segmentation(frame, prompt="chair", overlay_original=False):
+    pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    seg_inputs = seg_processor(text=[prompt], images=[pil_image], padding="max_length", return_tensors="pt").to(device)
+    with torch.no_grad():
+        seg_outputs = seg_model(**seg_inputs)
+    preds = seg_outputs.logits.unsqueeze(1)
+    mask = torch.sigmoid(preds[0][0]).cpu().numpy()
+    mask_resized = cv2.resize(mask, (frame.shape[1], frame.shape[0]))
+    binary_mask = (mask_resized > 0.5).astype(np.uint8) * 255
+
+    if overlay_original:
+        overlay = frame.copy()
+        overlay[:, :, 0] = np.where(binary_mask == 255, 0, 0)
+        overlay[:, :, 1] = np.where(binary_mask == 255, 255, 0)
+        overlay[:, :, 2] = np.where(binary_mask == 255, 0, 255)
+        return cv2.addWeighted(frame, 0.6, overlay, 0.4, 0)
+
+    return binary_mask
+
 def run_object_detection(frame):
     detection_frame = frame.copy()
     yolo_results = yolo_model(detection_frame)
+    labels = []
     for result in yolo_results[0].boxes:
         box = result.xyxy[0]
         confidence = result.conf[0]
+        if confidence < 0.5:
+            continue
         class_id = int(result.cls[0])
         label = yolo_model.names[class_id]
+        labels.append(label)
+        print("object detection result:", label)
+    return labels
 
-        x_top_left, y_top_left, x_bottom_right, y_bottom_right = map(int, box)
-        cv2.rectangle(detection_frame, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right), (0, 255, 0), 2)
-        label_text = f"{label}: {confidence:.2f}"
-        cv2.putText(detection_frame, label_text, (x_top_left, y_top_left - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-    return detection_frame
+    #     x_top_left, y_top_left, x_bottom_right, y_bottom_right = map(int, box)
+    #     cv2.rectangle(detection_frame, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right), (0, 0, 0), 2)
+    #     label_text = f"{label}: {confidence:.2f}"
+    #     cv2.putText(detection_frame, label_text, (x_top_left, y_top_left - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+    # return detection_frame, labels
 
 def run_depth_estimation(frame, overlay_detection=False):
     pil_image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
     depth = depth_pipe(pil_image)["depth"]
     depth_array = np.array(depth)
-    depth_normalized = cv2.normalize(depth_array, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
-    depth_colored = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_MAGMA)
+    return depth_array
 
+    # depth_normalized = cv2.normalize(depth_array, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    # depth_colored = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_MAGMA)
     if overlay_detection:
         detection_frame = run_object_detection(frame)
         for result in yolo_model(detection_frame)[0].boxes:
