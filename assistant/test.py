@@ -35,17 +35,17 @@ def main(save_video=False, duration=10, fps=6, camera=0):
         start = time()
         depth_frame = run_depth_estimation(frame_resized, overlay_detection=True)
         print("depth estimation took", time() - start)
-        start = time()
-        seg_frame = run_semantic_segmentation(frame_resized, prompt="ground",overlay_original=True)
-        print("semantic segmentation took", time() - start)
+        # start = time()
+        # seg_frame = run_semantic_segmentation(frame_resized, prompt="ground",overlay_original=True)
+        # print("semantic segmentation took", time() - start)
 
-        # Layout for 2x2 Grid
-        top_row = np.hstack((original_frame, detection_frame))
-        bottom_row = np.hstack((depth_frame, seg_frame))
-        composite_frame = np.vstack((top_row, bottom_row))
+        # # Layout for 2x2 Grid
+        # top_row = np.hstack((original_frame, detection_frame))
+        # bottom_row = np.hstack((depth_frame, seg_frame))
+        # composite_frame = np.vstack((top_row, bottom_row))
 
-        if save_video and video_writer:
-            video_writer.write(composite_frame)
+        # if save_video and video_writer:
+        #     video_writer.write(composite_frame)
 
         # Display each window and composite
         cv2.imshow("Original Frame", original_frame)
