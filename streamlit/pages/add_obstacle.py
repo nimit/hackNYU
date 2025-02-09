@@ -6,7 +6,7 @@ from streamlit_folium import st_folium
 import base64
 import os
 
-def show_add_obstacle_page():
+def show_add_obstacle_page(obstacles_collection):
     st.title("Add an Obstacle")
 
     # Initialize session state variables
@@ -102,18 +102,21 @@ def show_add_obstacle_page():
 
                 # Handle photo upload
                 if photo is not None:
-                    # Convert the photo to base64
-                    photo_bytes = photo.read()
-                    photo_base64 = base64.b64encode(photo_bytes).decode('utf-8')
-                    obstacle_data['photo'] = photo_base64  # Add the photo to the data
+                    # Decode the base64 photo
+                    photo_bytes = base64.b64decode(photo)
+                    photo_filename = f"obstacle_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.png"
+                    
+                    # Save the photo to the filesystem (optional)
+                    with open(os.path.join("uploads", photo_filename), "wb") as f:
+                        f.write(photo_bytes)
 
-                # Send the data to the backend
-                response = requests.post("http://localhost:5000/add_obstacle", json=obstacle_data)
+                    # Add the filename to the document
+                    obstacle_data["photo"] = photo_filename
 
-                if response.status_code == 201:
-                    st.success("Obstacle added successfully!")
-                else:
-                    st.error("Failed to add obstacle: " + response.json().get("message", "Unknown error"))
+                # Insert the document into MongoDB
+                obstacles_collection.insert_one(obstacle_data)
+
+                st.success("Obstacle added successfully!")
             else:
                 st.error("Please fill in all fields and tag a location on the map.")
 
@@ -129,8 +132,3 @@ def show_add_obstacle_page():
         });
     </script>
     """, height=0)
-
-#if active page is add_obstacle, show the add_obstacle_page
-if st.session_state.get('active_page', '') == 'add_obstacle':
-    print("Add Obstacle Page Active")
-    show_add_obstacle_page()

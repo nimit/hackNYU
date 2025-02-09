@@ -3,3 +3,7 @@ streamlit-extras
 streamlit-chat
 streamlit-folium
 geopy
+pymongo
+python-dotenv
+bcrypt
+PyJWT
