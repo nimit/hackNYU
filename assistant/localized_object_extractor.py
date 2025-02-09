@@ -15,9 +15,9 @@ class LocalizedData:
     self.translated_classes = translated_classes
     self.instructions = instructions
   
-  def get(self, key):
-
-    return self.instructions.get(key, "Localization Error").replace("{{object}}", self.locale_object)
+  def get(self, key, obstacle=None):
+    object = obstacle if obstacle else (self.locale_object if self.locale_object else "")
+    return self.instructions.get(key, "Localization Error").replace("{{object}}", object)
 
 def extract_object(input_text, language, instructions):
   load_dotenv()

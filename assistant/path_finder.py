@@ -79,14 +79,14 @@ def next_instruction(objects, loc_data):
         # ONLY return an actual target_depth when the previous move is move forward so we can check the SECOND threshold for if we have reached the object now
         if (res == "Left"):
             if (loc == "middle of screen"):
-                return (loc_data.get("move_left_obstacle"), loc, True)
+                return (loc_data.get("move_left_obstacle", obstacle[0]), loc, True)
             elif (loc == "right of screen"):
                 return (loc_data.get("move_forward"), target_depth, False)
 
 
         elif (res == "Right"):
             if (loc == "middle of screen"):
-                return (loc_data.get("move_right_obstacle"), loc, True)
+                return (loc_data.get("move_right_obstacle", obstacle[0]), loc, True)
             elif (loc == "left of screen"):
                 return (loc_data.get("move_forward"), loc, False)
 

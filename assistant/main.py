@@ -27,23 +27,21 @@ def start_find():
     depth_colored = None
     speak(STRINGS["introduction"])
     loc_data, lang = get_target_object(record_duration=RECORD_DURATION)
-    # if loc_data and loc_data.object:
-    #     print("Object to detect:", loc_data.object)
-    # else:
-    #     print("No object found in the transcription.")
-    #     speak(loc_data.get("transcript_error"), lang)
-    #     exit(1)
-
-    # target_obj = loc_data.object
-    # print("User language is", lang)
-    
-    #? test
-    # target_obj = "backpack"
-    target_obj = "bottle"
-    lang = "en"
-    
+    if loc_data and loc_data.object:
+        print("Object to detect:", loc_data.object)
+    else:
+        print("No object found in the transcription.")
+        speak(loc_data.get("transcript_error"), lang)
+        exit(1)
+    target_obj = loc_data.object
+    print("User language is", lang)
     speak(loc_data.get("transcript_success"), lang)
 
+    #? test
+    # target_obj = "backpack"
+    # target_obj = "bottle"
+    # lang = "en"
+    
     AREA_THRESHOLD = 2.25
     DEPTH_THRESHOLD = 30
     TIME_SPEAK_INTERVAL = 0.75
