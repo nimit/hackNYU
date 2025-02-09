@@ -30,12 +30,14 @@ Format the response as JSON with the following structure:
 }}
 If no object is found, set "identified_object": "none" and "translated_objects": null, but still translate the instructions.
 
-Ensure accuracy in translations and maintain JSON structure integrity.""")
+Ensure accuracy in translations and maintain JSON structure integrity.
+
+Additional note to take care when translating the instructions, look for double curly braces {{}} in the instructions and consider the text between them as a variable so translate it accordingly that it makes sense if i replace the variable with the object in future.""")
 
 # Prepare the prompt with input
-input_text = "I want to find my flask"
-language = "english"
-instructions = ["turn left", "turn right", "move forward"]
+input_text = "मैं अपनी बोतल ढूंढना चाहता हूँ"
+language = "hi"
+instructions = ["turn left", "turn right", "There is a {{variable}} in front of you, turn left"]
 
 prompt = prompt_template.format(input=input_text, language=language, instructions=instructions)
 
